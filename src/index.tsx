@@ -4,18 +4,19 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { Provider } from 'react-redux';
-import { rootEpic, user, UserState } from './redux/store';
+import { rootEpic } from './redux/store';
 import { createEpicMiddleware } from 'redux-observable';
 import { configureStore } from 'redux-starter-kit';
 import { combineReducers } from 'redux';
+import { AuthState, auth } from './redux/auth/actions';
 
 export type State = {
-	user: UserState;
+	auth: AuthState;
 };
 const epicMiddleware = createEpicMiddleware();
 
 export const reducer = combineReducers({
-	user: user.reducer,
+	auth: auth.reducer,
 });
 
 const store = configureStore({ reducer, devTools: true, middleware: [ epicMiddleware ] });

@@ -1,48 +1,46 @@
-import React, { Component, useState, useRef, useEffect, Dispatch, FunctionComponent } from 'react';
+import React, { useEffect, FunctionComponent } from 'react';
 import './App.css';
 import { connect } from 'react-redux';
-import {   user } from './redux/store';
 import { State } from '.';
-import { auth } from './firebase/firebase';
-
+import { auth as fbAuth } from './firebase/firebase';
+import { Router, navigate } from '@reach/router';
+import { HOME_PAGE, SIGN_UP_PAGE } from './constants/constants';
+import SignUpPage from './components/SignUpPage/SignUpPage';
+import HomePage from './components/HomePage/HomePage';
+import { auth } from './redux/auth/actions';
 
 type AppProps = {
-	signUp: (email: string, password: string) => void;
-	signIn: (email: string, password: string) => void;
 	signOut: () => void;
 	fetchUser: (user: firebase.User) => void;
-}
+};
 
-const App: FunctionComponent<AppProps> = (props) => {
+const App: FunctionComponent<AppProps> = ({ fetchUser }) => {
 	useEffect(() => {
-		const subscribe = auth.onAuthStateChanged((user) => {
-			if (user){
-				props.fetchUser(user);
+		const subscribe = fbAuth.onAuthStateChanged((user) => {
+			if (user) {
+				fetchUser(user);
+				navigate(HOME_PAGE);
 			} else {
-				console.log('no user :(')
+				navigate(SIGN_UP_PAGE);
 			}
 		});
 		return () => subscribe();
 	}, []);
 	return (
-		<>
-		{console.log(props)}
-		<button onClick={() => props.signUp("stefan@bassplayer.ch", "stefan.91")}>signup</button>
-		<button onClick={() => props.signIn("stefan@bassplayer.ch", "stefan.91")}>signin</button>
-		<button onClick={props.signOut}>signout</button>
-		</>
+		<Router>
+			<SignUpPage path={SIGN_UP_PAGE} />
+			<HomePage path={HOME_PAGE} />
+		</Router>
 	);
-}
+};
 
 const mapStateToProps = (state: State) => ({
-	user: state.user
+	auth: state.auth
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
-	signUp: (email: string, password: string) => dispatch(user.actions.createUserRequest({email, password})),
-	signIn: (email: string, password: string) => dispatch(user.actions.signInRequest({email, password})),
-	signOut: () => dispatch(user.actions.signoutRequest()),
-	fetchUser: (u: firebase.User) => dispatch(user.actions.fetchUser(u))
+	signOut: () => dispatch(auth.actions.signoutRequest()),
+	fetchUser: (u: firebase.User) => dispatch(auth.actions.fetchUser(u))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
