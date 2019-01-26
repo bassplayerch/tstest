@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction} from 'redux-starter-kit';
 import { FirebaseError } from 'firebase';
+import { StateObservable } from 'redux-observable';
 
 export type AuthState = {
     error: firebase.FirebaseError | null;
@@ -57,11 +58,17 @@ export const auth = createSlice({
             loading: false,
             error: action.payload
         }),
-        addUserToDbSuccess: (state) => ({ ...state, loading: false }),
+        addUserToDbSuccess: (state,  action: PayloadAction<firebase.User>) => state,
         addUserToDbFailure: (state, action: PayloadAction<FirebaseError>) => ({
             ...state,
             loading: false,
             error: action.payload
-        })
+        }),
+        sendActivationMailSuccess: state => ({...state, loading: false, error: null}),
+        sendActivationMailFailure: (state, action: PayloadAction<FirebaseError>) => ({
+            ...state,
+            loading: false,
+            error: action.payload
+        }),
     }
 });

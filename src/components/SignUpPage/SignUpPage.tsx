@@ -1,8 +1,9 @@
 import React, { FunctionComponent, FormEvent } from 'react';
-import { State } from '../..';
 import { connect } from 'react-redux';
 import { useInput } from './../../hooks/useInput';
 import { auth } from '../../redux/auth/actions';
+import { State } from '../../redux/store';
+import { Dispatch } from 'redux';
 
 type SignUpPageProps = {
     path: string;
@@ -26,7 +27,6 @@ const SignUpPage: FunctionComponent<SignUpPageProps> = ({ signUp, signIn }) => {
         signIn(loginEmail.value, loginPassword.value)
     }
 
-
     return (
         <>
             <h1>signup page</h1>
@@ -45,11 +45,13 @@ const SignUpPage: FunctionComponent<SignUpPageProps> = ({ signUp, signIn }) => {
     )
 }
 
-const mapStateToProps = (state: State) => ({
-    auth: state.auth
-});
+const mapStateToProps = (state: State) => {
+    return ({
+        auth: state.auth
+    });
+};
 
-const mapDispatchToProps = (dispatch: any) => ({
+const mapDispatchToProps = (dispatch: Dispatch) => ({
     signUp: (email: string, password: string) => dispatch(auth.actions.signUpRequest({ email, password })),
     signIn: (email: string, password: string) => dispatch(auth.actions.signInRequest({ email, password })),
 });

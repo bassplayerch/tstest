@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
-import { State } from '../..';
 import { auth } from '../../redux/auth/actions';
 import { connect } from 'react-redux';
+import { State } from '../../redux/store';
 
 export type HomePageProps = {
     path: string;

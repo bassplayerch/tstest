@@ -1,13 +1,14 @@
 import React, { useEffect, FunctionComponent } from 'react';
 import './App.css';
 import { connect } from 'react-redux';
-import { State } from '.';
 import { auth as fbAuth } from './firebase/firebase';
 import { Router, navigate } from '@reach/router';
-import { HOME_PAGE, SIGN_UP_PAGE } from './constants/constants';
 import SignUpPage from './components/SignUpPage/SignUpPage';
 import HomePage from './components/HomePage/HomePage';
 import { auth } from './redux/auth/actions';
+import { State } from './redux/store';
+import { routes } from './constants/routes';
+import ActivateEmailPage from './components/ActivateEmailPage/ActivateEmailPage';
 
 type AppProps = {
 	signOut: () => void;
@@ -19,17 +20,22 @@ const App: FunctionComponent<AppProps> = ({ fetchUser }) => {
 		const subscribe = fbAuth.onAuthStateChanged((user) => {
 			if (user) {
 				fetchUser(user);
-				navigate(HOME_PAGE);
+				if (user.emailVerified) {
+					navigate(routes.HOME_PAGE);
+				} else {
+					navigate(routes.ACTIVATE_EMAIL_PAGE);
+				}
 			} else {
-				navigate(SIGN_UP_PAGE);
+				navigate(routes.SIGN_UP_PAGE);
 			}
 		});
 		return () => subscribe();
 	}, []);
 	return (
 		<Router>
-			<SignUpPage path={SIGN_UP_PAGE} />
-			<HomePage path={HOME_PAGE} />
+			<SignUpPage path={routes.SIGN_UP_PAGE} />
+			<HomePage path={routes.HOME_PAGE} />
+			<ActivateEmailPage path={routes.ACTIVATE_EMAIL_PAGE} />
 		</Router>
 	);
 };
